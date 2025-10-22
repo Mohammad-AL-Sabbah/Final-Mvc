@@ -1,0 +1,139 @@
+﻿@using Ecommerce.Models
+@model List<Product>
+
+<style>
+    /* ===== تصميم البطاقة ===== */
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        height: 380px;
+        width: 260px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+    /* ===== صورة المنتج ===== */
+    .card-img-top {
+        height: 220px;
+        width: 100%;
+        object-fit: contain;
+        background-color: #f8f9fa;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    /* ===== جسم البطاقة ===== */
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 10px;
+        flex: 1;
+    }
+
+    /* ===== حاوية النصوص ===== */
+    .card-text-area {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+
+    /* ===== اسم المنتج ===== */
+    .card-title {
+        font-size: 17px;
+        font-weight: 600;
+        height: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; /* ✅ اخفاء النص الزائد */
+        width: 100%;
+    }
+
+    /* ===== السعر ===== */
+    .price-text {
+        font-size: 16px;
+        font-weight: bold;
+        color: #2c3e50;
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap; /* ✅ اخفاء النص الزائد */
+        width: 100%;
+    }
+
+    /* ===== أزرار التحكم ===== */
+    .btn-group-custom {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: auto;
+    }
+
+        .btn-group-custom .btn-danger {
+            flex: 0.35;
+            font-size: 13px;
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+
+        .btn-group-custom .btn-warning {
+            flex: 0.65;
+            font-size: 13px;
+            padding: 6px 8px;
+            border-radius: 6px;
+        }
+
+    /* ===== استجابة للشاشات الصغيرة ===== */
+    @@media (max-width: 576px) {
+        .card-hover {
+            width: 90% !important;
+            height: auto !important;
+        }
+
+        .btn-group-custom {
+            flex-direction: column;
+            gap: 6px;
+        }
+
+            .btn-group-custom .btn {
+                width: 100%;
+            }
+    }
+</style>
+
+<div class="mt-4">
+    <h3 class="mb-4 text-center fw-bold">@ViewBag.CategoryName</h3>
+    <div class="d-flex flex-wrap justify-content-center">
+        @foreach (var item in Model)
+        {
+            <div class="card card-hover shadow-sm border-0 rounded-3 m-2 text-center">
+                <img src="/Imgs/@item.Image" class="card-img-top" alt="@item.Name">
+                <div class="card-body">
+                    <div class="card-text-area">
+                        <h5 class="card-title" title="@item.Name">@item.Name</h5>
+                        <p class="price-text" title="₪ @item.Price.ToString("0.#")">₪ @item.Price.ToString("0.#")</p>
+                    </div>
+                    <div class="btn-group-custom">
+                        <a href="/Admin/Products/Remove/@item.Id"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟');">
+                            حذف
+                        </a>
+                        <a href="/Admin/Products/Edit/@item.Id"
+                           class="btn btn-warning btn-sm">
+                            عرض التفاصيل وتعديلها
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

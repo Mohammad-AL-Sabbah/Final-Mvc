@@ -1,0 +1,160 @@
+﻿@using Ecommerce.Models
+@model Carousel
+
+@{
+    ViewData["Title"] = "إضافة شريحة كاروسيل جديدة";
+}
+
+@* الأنماط المخصصة للمظهر الاحترافي والحد الأدنى (Minimalist) *@
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card-modern {
+        border-radius: 1rem;
+        border: none;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+    }
+    .form-control:focus, .form-select:focus, .form-control-lg:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+    /* تنسيق خاص بصور الكاروسيل (شريط أفقي) */
+    .image-preview-wrapper {
+        position: relative;
+        width: 100%; /* عرض كامل للحاوية */
+        max-width: 400px; /* تحديد أقصى عرض مرئي */
+        height: 120px; /* ارتفاع ثابت للمعاينة */
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #e9ecef;
+    }
+    .image-preview-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* مهم لصور الكاروسيل لملء المساحة */
+    }
+    .remove-image-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 25px;
+        height: 25px;
+        font-size: 0.75rem;
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        cursor: pointer;
+        z-index: 10;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+            
+            <div class="card card-modern">
+                <div class="card-body p-5">
+                    
+                    <h1 class="h3 fw-bold text-center mb-4 text-primary">إضافة شريحة كاروسيل</h1>
+                    <p class="text-center text-muted mb-5">
+                        قم بإضافة محتوى جديد سيظهر على الصفحة الرئيسية.
+                    </p>
+
+                    <form asp-action="StoreCarousel" method="post" enctype="multipart/form-data" id="carouselForm">
+
+                        <div class="mb-4">
+                            <label asp-for="Title" class="form-label fw-semibold">العنوان الرئيسي</label>
+                            <input asp-for="Title" class="form-control form-control-lg" placeholder="العنوان الرئيسي .."  />
+                            <span asp-validation-for="Title" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="SubTitle" class="form-label fw-semibold">العنوان الفرعي</label>
+                            <input asp-for="SubTitle" class="form-control form-control-lg" placeholder="عنوان مختصر .." />
+                            <span asp-validation-for="SubTitle" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Description" class="form-label fw-semibold">الوصف / التفاصيل</label>
+                            <textarea asp-for="Description" rows="3" class="form-control form-control-lg" placeholder="نص تفصيلي لوصف العرض أو المنتج..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-5">
+                            <label class="form-label fw-semibold d-block mb-3">صورة الشريحة</label>
+                            
+                            <div id="imagePreviewContainer" class="image-preview-wrapper mb-3 d-none">
+                                <img id="imagePreview" src="#" alt="معاينة الشريحة" />
+                                <button type="button" id="removeImageBtn" class="remove-image-btn" aria-label="إزالة الصورة">
+                                    <i class="bi bi-x fw-bold"></i>
+                                </button>
+                            </div>
+                            
+                            <input type="file" name="Image" id="ImageFile" class="form-control form-control-lg" accept="image/*" required />
+                            <small class="form-text text-muted">اختر صورة أفقية ذات دقة عالية (مهمة لصور الكاروسيل).</small>
+                            <span asp-validation-for="Image" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                        
+                        <div class="d-grid gap-3 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold py-2">
+                                <i class="bi bi-cloud-arrow-up-fill me-2"></i>
+                                حفظ الشريحة
+                            </button>
+                            
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg py-2">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                العودة إلى قائمة الشرائح
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.getElementById('ImageFile');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImage = document.getElementById('imagePreview');
+            const removeBtn = document.getElementById('removeImageBtn');
+
+            // 1. عرض المعاينة عند اختيار ملف
+            fileInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.classList.remove('d-none'); // إظهار الحاوية
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    previewContainer.classList.add('d-none');
+                    previewImage.src = '#';
+                }
+            });
+
+            // 2. إزالة الصورة عند النقر على زر (X)
+            removeBtn.addEventListener('click', function () {
+                previewContainer.classList.add('d-none');
+                previewImage.src = '#';
+                fileInput.value = ''; // مسح الملف المختار
+            });
+        });
+    </script>
+}

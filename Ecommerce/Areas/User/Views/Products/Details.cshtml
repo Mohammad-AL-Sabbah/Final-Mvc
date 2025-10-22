@@ -1,0 +1,349 @@
+﻿@using Ecommerce.Models
+@using Ecommerce.Areas.User.Models
+@model Product
+
+@{
+    ViewData["Title"] = $"متجرنا - {Model.Name}";
+    var relatedProducts = ViewBag.RelatedProducts as List<Product>;
+}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================== المتغيرات الأساسية ================== */
+        :root {
+            --primary-color: #007bff; /* أزرق أساسي للأزرار */
+            --luxury-price-color: #495057; /* اللون الرمادي الداكن الهادئ للأسعار */
+            --dark-text: #2c3e50; /* نص داكن هادئ */
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.08);
+            --transition-duration: 0.3s;
+        }
+
+        /* ================== الخطوط والتصميم العام المريح ================== */
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4f6f9; /* خلفية هادئة */
+        }
+
+        h1, h2, h3, h4 {
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .text-muted-subtle {
+            color: #8898aa !important; /* لون رمادي أفتح وأكثر أناقة */
+        }
+
+        .detail-item-box {
+            background-color: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+
+        /* ================== قسم المنتج الرئيسي ================== */
+        .product-details-card {
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            padding: 30px;
+        }
+
+        .main-img-container {
+            height: 450px;
+            padding: 20px;
+            background-color: #f8f9fa; /* خلفية فاتحة للصورة */
+            border-radius: 10px;
+        }
+
+            .main-img-container img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                transition: transform var(--transition-duration);
+            }
+
+            .main-img-container:hover img {
+                transform: scale(1.03); /* تأثير زووم خفيف */
+            }
+
+        /* تنسيقات النص */
+        .product-name {
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        .product-price-display {
+            font-size: 2.8rem; /* أكبر قليلاً */
+            font-weight: 800;
+            color: var(--luxury-price-color);
+        }
+
+        .product-description {
+            font-size: 1.05rem;
+            color: #5a687c; /* لون نص مريح */
+            line-height: 1.8;
+            font-weight: 400; /* خط خفيف للوصف */
+        }
+
+        /* النجوم */
+        .star-rating i {
+            color: #ffc107;
+            margin-left: 2px;
+        }
+
+        .rating-box {
+            background-color: #f3f3f3;
+            border-radius: 50px;
+            padding: 5px 15px;
+        }
+
+
+        /* الأزرار العصرية */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            font-weight: 700;
+            border-radius: 8px;
+            transition: all var(--transition-duration);
+        }
+
+            .btn-primary:hover {
+                background-color: #0056b3;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 10px rgba(0, 123, 255, 0.3);
+            }
+
+        .btn-outline-secondary {
+            border: 2px solid #ccc;
+            color: #6c757d;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all var(--transition-duration);
+        }
+
+            .btn-outline-secondary:hover {
+                background-color: #e9ecef;
+                color: var(--dark-text);
+                transform: translateY(-2px);
+            }
+
+        /* ================== المنتجات المرتبطة (Related Products) ================== */
+        .related-section-title {
+            font-weight: 800;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+            .related-section-title::after {
+                content: '';
+                display: block;
+                width: 80px;
+                height: 4px;
+                background-color: var(--primary-color);
+                margin: 10px auto 0;
+                border-radius: 2px;
+            }
+
+        .related-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .related-product-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: transform var(--transition-duration), box-shadow var(--transition-duration);
+            text-align: center;
+        }
+
+            .related-product-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            }
+
+        .related-img {
+            height: 200px;
+            padding: 10px;
+            object-fit: contain;
+        }
+
+        .related-product-name {
+            font-size: 1rem;
+            font-weight: 700;
+            height: 2.4em; /* لسطرين */
+            line-height: 1.2em;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .related-product-price {
+            font-weight: 700;
+            color: var(--luxury-price-color);
+            font-size: 1.1rem;
+        }
+
+        /* التجاوبية */
+        @@media (max-width: 768px) {
+            .product-name
+
+        {
+            font-size: 1.8rem;
+        }
+
+        .product-details-card {
+            padding: 20px;
+        }
+
+        .main-img-container {
+            height: 300px;
+        }
+
+        }
+    </style>
+</head>
+<body class="pb-5">
+    <div dir="rtl">
+
+    <div class="container my-5">
+        <div class="product-details-card">
+            <div class="row g-5 align-items-stretch">
+
+                @* ================== قسم الصورة (اليمين) ================== *@
+                <div class="col-md-5">
+                    <div class="main-img-container">
+                        <img src="/Imgs/@Model.Image"
+                             class="img-fluid"
+                             alt="@Model.Name">
+                    </div>
+                </div>
+
+                @* ================== قسم التفاصيل (اليسار) ================== *@
+                <div class="col-md-7">
+                    <h1 class="product-name mb-3 text-center">@Model.Name</h1>
+
+                    @* ============= قسم التقييم الجديد ============= *@
+                    <div class="d-flex justify-content-end align-items-center mb-4">
+                        @{
+                            // حساب تقييم النجوم
+                            int fullStars = (int)Math.Floor(Model.Rate);
+                            bool halfStar = (Model.Rate - fullStars) >= 0.5m;
+                            int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                            string starsHtml = "";
+
+                            for (int i = 0; i < fullStars; i++) { starsHtml += "<i class='fa-solid fa-star'></i>"; }
+                            if (halfStar) { starsHtml += "<i class='fa-solid fa-star-half-stroke'></i>"; }
+                            for (int i = 0; i < emptyStars; i++) { starsHtml += "<i class='fa-regular fa-star'></i>"; }
+                        }
+                        <div class="rating-box">
+                            <span class="star-rating fs-5">
+                                @Html.Raw(starsHtml)
+                            </span>
+                            <span class="ms-2 fw-bold text-dark">@Model.Rate.ToString("0.0")</span>
+                        </div>
+                        <span class="text-muted-subtle me-3">| تقييم المستخدمين</span>
+                    </div>
+
+                    @* ============= قسم الوصف ============= *@
+                    <div class="detail-item-box">
+                        <p class="fw-bold mb-2 text-dark">وصف المنتج:</p>
+                        <p class="product-description mb-0">@Model.Description</p>
+                    </div>
+
+                    @* ============= قسم السعر والمخزون ============= *@
+                    <div class="row g-3 mb-4">
+                        <div class="col-sm-6">
+                            <div class="detail-item-box bg-light">
+                                <p class="text-muted-subtle mb-1 fw-bold">السعر:</p>
+                                <span class="product-price-display">
+                                    ₪@Model.Price.ToString("0.0") 
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="detail-item-box bg-light">
+                                <p class="text-muted-subtle mb-1 fw-bold">حالة المخزون:</p>
+                                <p class="mb-0 fw-bold fs-5">
+                                  
+                                    <span class="@(Model.Quantity > 0 ? "text-success" : "text-danger")">
+                                        @if (Model.Quantity > 0)
+                                        {
+                                            <i class="fa-solid fa-check-circle ms-1"></i>
+                                            <span class="text-success">متوفر: @Model.Quantity قطعة</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-solid fa-times-circle ms-1"></i>
+                                            <span>نفد المخزون</span>
+                                        }
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    @* ============= الأزرار ============= *@
+                    <div class="d-flex flex-column flex-sm-row gap-3 mt-4">
+                        <button class="btn btn-primary btn-lg flex-grow-1"
+                                @(Model.Quantity == 0 ? "disabled" : "")>
+                            <i class="fa-solid fa-cart-shopping ms-2"></i> أضف إلى السلة
+                        </button>
+                        <a href="@Url.Action("Products", "Home", new { id = Model.CategoryId })"
+                           class="btn btn-outline-secondary btn-lg flex-grow-1">
+                            <i class="fa-solid fa-arrow-right ms-2"></i> العودة لتصفح الفئة
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @* ================== المنتجات المرتبطة ================== *@
+    @if (relatedProducts != null && relatedProducts.Any())
+    {
+        <div class="container my-5 pt-3">
+            <h2 class="related-section-title text-center">منتجات قد تعجبك (منتجات مرتبطة)</h2>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4 d-flex justify-content-center">
+                @foreach (var item in relatedProducts)
+                {
+                    <div class="col d-flex">
+                        <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="related-card-link w-100">
+                            <div class="card related-product-card h-100">
+                                <img src="/Imgs/@item.Image"
+                                     class="card-img-top related-img"
+                                     alt="@item.Name">
+                                <div class="card-body p-3">
+                                    <h5 class="related-product-name text-dark">@item.Name</h5>
+                                    <p class="related-product-price mb-0 mt-2">₪@item.Price.ToString("0.0")</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

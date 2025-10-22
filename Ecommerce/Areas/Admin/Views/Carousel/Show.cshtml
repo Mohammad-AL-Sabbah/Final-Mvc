@@ -1,0 +1,154 @@
+﻿@using Ecommerce.Models
+@model List<Carousel>
+
+<style>
+    .carousel-item-wrapper {
+        width: 32%;
+        margin: 10px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+        .carousel-item-wrapper:hover {
+            transform: translateY(-4px);
+        }
+
+        .carousel-item-wrapper img {
+            width: 100%;
+            height: 300px; 
+            object-fit: cover;
+        }
+
+    .carousel-text {
+        padding: 12px 8px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .carousel-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #212529;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-bottom: 6px;
+    }
+
+    .carousel-subtitle {
+        font-size: 14px;
+        color: #6c757d;
+        margin-bottom: 12px;
+        min-height: 36px;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: auto;
+    }
+
+        .action-buttons a {
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #fff;
+            transition: background 0.3s;
+        }
+
+    .btn-delete {
+        background-color: #dc3545;
+    }
+
+        .btn-delete:hover {
+            background-color: #b52a37;
+        }
+
+    .btn-edit {
+        background-color: #ffc107;
+        color: #212529;
+    }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+
+    .no-carousel-items {
+        text-align: center;
+        padding: 60px 20px;
+        color: #495057;
+        font-size: 16px;
+        font-weight: 500;
+        margin-top: 20px;
+    }
+
+    .carousel-container {
+        display: flex;
+        justify-content: space-between; 
+        gap: 10px;
+        flex-wrap: wrap; 
+    }
+
+   
+    @@media (max-width: 992px) {
+        .carousel-item-wrapper
+
+    {
+        width: 48%; 
+    }
+
+    }
+
+    @@media (max-width: 576px) {
+        .carousel-item-wrapper
+
+    {
+        width: 100%; 
+    }
+
+    }
+</style>
+
+<div class="container mt-4">
+    @if (Model != null && Model.Any())
+    {
+        <div class="carousel-container">
+            @foreach (var item in Model)
+            {
+                <div class="carousel-item-wrapper">
+                    <img src="/Imgs/@item.Image" alt="@item.Title">
+                    <div class="carousel-text">
+                        <h5 class="carousel-title">
+                            <span style="color:#6c757d;font-weight:bold; font-size:16px;" class="me-1">Main title</span>: @item.Title
+                        </h5>
+                        <p class="carousel-subtitle">
+                            <span style="color:#6c757d; font-size:13px; font-weight:500;">Subtitle:</span> @item.SubTitle
+                        </p>
+                        <div class="action-buttons">
+                            <a href="/Admin/Carousel/RemoveCarousel/@item.Id" class="btn-delete"
+                               onclick="return confirm('هل أنت متأكد من حذف هذا العنصر؟');">حذف</a>
+                            <a href="/Admin/Carousel/Edit/@item.Id" class="btn-edit">تعديل</a>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="no-carousel-items">
+            <h4>لا توجد عناصر في الكاروسيل</h4>
+            <p>يمكنك إضافة عناصر جديدة من خلال لوحة التحكم.</p>
+        </div>
+    }
+</div>

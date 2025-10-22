@@ -1,0 +1,200 @@
+﻿@using Ecommerce.Models
+@using Ecommerce.Areas.User.Models
+
+@{
+    ViewData["Title"] = $"Ecommerce - {ViewBag.CategoryName}";
+
+ 
+}
+
+<title>@ViewData["Title"]</title>
+
+<div class="category-hero-banner" style="background-color: black; color: white;">
+    <div class="container h-100 d-flex flex-column justify-content-center align-items-center">
+        <h1 class="display-4 fw-light text-uppercase mb-0">
+            @ViewBag.CategoryName
+        </h1>
+        <p class="lead">Explore the best products in this category.</p>
+    </div>
+</div>
+
+<div class="categories-nav-bar border-bottom shadow-sm">
+    <div class="container">
+        <div class="swiper categoriesSwiper">
+            <div class="swiper-wrapper justify-content-center align-items-center py-2">
+                @if (ViewBag.Categories != null && ((List<Category>)ViewBag.Categories).Any())
+                {
+                    @foreach (var category in (List<Category>)ViewBag.Categories)
+                    {
+                        <div class="swiper-slide categories-nav-item">
+                            <a href="@Url.Action("Products", "Home", new { id = category.Id })" class="category-link-text text-decoration-none fw-semibold">
+                                @category.Name
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5 py-3">
+
+    <h2 class="text-center mb-5 fw-bold text-dark">
+        <span class="border-bottom border-primary border-3 pb-1">
+            Products: @ViewBag.CategoryName
+        </span>
+    </h2>
+
+    @if (ViewBag.Products != null && ((List<Product>)ViewBag.Products).Any())
+    {
+        @* تم إضافة justify-content-center هنا لتوسيط المنتجات في حال لم يكتمل الصف الأخير *@
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-4 justify-content-center"> 
+            @foreach (var item in (List<Product>)ViewBag.Products)
+            {
+                <div class="col d-flex">
+                    <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="product-card text-decoration-none w-100">
+                        <div class="card h-100 shadow-sm border-0 transition-3s">
+                            <div class="product-img-container">
+                                <img class="card-img-top object-fit-contain w-100 h-100"
+                                     src="/Imgs/@item.Image"
+                                     alt="@item.Name"
+                                     loading="lazy">
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="product-name fw-semibold mb-2">@item.Name</h5>
+                                <div class="mt-auto pt-2 d-fe">
+                                    @* تم تغيير "N2" إلى "F1" لعرض رقم عشري واحد بعد الفاصلة *@
+                                    <p class="product-price fw-bold text-success mb-1 text-center">₪@item.Price.ToString("F1")</p> 
+                                    <div class="d-flex justify-content-center align-items-center small mb-0">
+                                        @{
+                                            var stockClass = item.Quantity > 0 ? "text-success" : "text-danger";
+                                            var stockText = item.Quantity > 0 ? $"متوفر: {item.Quantity} قطعة" : "نفد المخزون";
+                                        }
+                                        <span class="fw-bold @stockClass">
+                                            @stockText
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center shadow-sm p-4 my-5" role="alert">
+            <h4 class="alert-heading"> No Products Available!</h4>
+            <p class="mb-0">لا تتوفر منتجات في هذه الفئة حالياً</p>
+        </div>
+    }
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+<style>
+    .transition-3s {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .category-hero-banner {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .categories-nav-bar {
+        background-color: #f8f9fa; 
+        padding: 0;
+    }
+
+    .categories-nav-item {
+        width: auto !important;
+        padding: 0 1rem;
+        text-align: center;
+    }
+
+    .category-link-text {
+        color: #495057; 
+        font-size: 0.95rem;
+        white-space: nowrap;
+        line-height: 40px; 
+        display: block;
+        transition: color 0.3s ease-in-out, transform 0.2s ease-out;
+    }
+
+        .category-link-text:hover {
+            color: #007bff; 
+            transform: translateY(-2px);
+        }
+
+    .categories-nav-bar .swiper-button-next,
+    .categories-nav-bar .swiper-button-prev,
+    .categories-nav-bar .swiper-pagination {
+        display: none !important;
+    }
+
+    .product-card {
+        color: inherit;
+    }
+
+        .product-card .card {
+            border: 1px solid #dee2e6;
+        }
+
+        .product-card:hover .card {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+        }
+
+    .product-img-container {
+        height: 250px;
+        padding: 15px;
+    }
+
+        .product-img-container img {
+            border-radius: 6px;
+        }
+
+    .product-name {
+        font-size: 1rem;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 3em;
+        color: #343a40;
+    }
+
+    .product-price {
+        font-size: 1.25rem;
+    }
+
+    .product-stock {
+        font-size: 0.85rem;
+    }
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const categoriesSwiper = new Swiper(".categoriesSwiper", {
+            slidesPerView: 'auto',
+            spaceBetween: 25,
+            freeMode: true,
+            centeredSlides: false,
+            navigation: false,
+            pagination: false,
+   
+        });
+    });
+</script>

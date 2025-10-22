@@ -1,0 +1,251 @@
+﻿@using Ecommerce.Models
+@using Ecommerce.Areas.User.Models
+@model List<Product>
+
+@{
+    ViewData["Title"] = "All Products - Ecommerce";
+    var searchTerm = Context.Request.Query["search"].ToString();
+
+    // تحديد العنوان الرئيسي
+    var headerText = string.IsNullOrEmpty(searchTerm)
+        ? "تصفح جميع منتجاتنا"
+        : $"\"{searchTerm}\" : نتائج البحث عن";
+}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================== الخط والتصميم العام ================== */
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f7f7f7;
+            overflow-x: hidden;
+        }
+
+        /* ================== شريط العنوان (البانر المُحدَّث) ================== */
+        .page-hero-banner-v1 {
+            height: 180px;
+            /* خلفية سوداء ونص أبيض */
+            background-color: black;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* تم إزالة التنسيقات المخصصة لحجم ووزن الخط والاعتماد على فئات Bootstrap */
+        .header-title {
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            opacity: 0.85;
+        }
+
+        /* ================== بطاقة المنتج (Product Card) ================== */
+        .product-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .product-card {
+            border: none;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .product-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            }
+
+        .product-img-container {
+            height: 250px;
+            padding: 15px;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .custom-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        /* الاسم بسطرين فقط */
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            height: 3rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            text-overflow: ellipsis;
+            line-height: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #343a40;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            color: #28a745;
+            font-weight: 700;
+        }
+
+        .product-stock {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        /* حالة خارج المخزون */
+        .out-of-stock {
+            color: #dc3545 !important;
+        }
+        /* -----------------------------------
+            1. تنسيق الفئة النشطة (Active Category)
+            ----------------------------------- */
+        .active-category-slide {
+            /* يضيف خط سفلي أزرق لتمييز الفئة النشطة */
+            border-bottom: 2px solid #007bff;
+            border-radius: 0;
+        }
+
+            .active-category-slide .active-category-link,
+            .active-category-link {
+                /* يغير لون النص إلى الأزرق الغامق */
+                color: #007bff !important;
+                font-weight: bold !important;
+            }
+
+        /* -----------------------------------
+            2. تأثير التمرير (Hover Effect)
+            ----------------------------------- */
+        .categories-nav-item .category-link-text:hover {
+            /* يغير لون النص إلى أزرق أغمق عند التمرير */
+            color: #0056b3 !important;
+            text-decoration: none !important; /* التأكيد على عدم وجود خط تحت النص */
+        }
+
+        /* -----------------------------------
+            3. تنسيق عام للروابط غير النشطة
+            ----------------------------------- */
+        /* هذا يضمن أن لون النص يكون أسود بشكل افتراضي ويتحول إلى اللون الأزرق عند التمرير */
+        .categories-nav-item .category-link-text {
+            color: #212529 !important; /* لون النص الأسود في Bootstrap */
+            transition: color 0.2s ease; /* إضافة تأثير انتقال سلس للون */
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <div class="page-hero-banner-v1 d-flex justify-content-center align-items-center">
+        <div class="text-center">
+
+            <h2 class=" fw-light text-uppercase mb-1 ">
+                @headerText
+            </h2>
+
+            <p class="lead fw-light mb-2 header-subtitle mt-4">Explore All products in our Store.</p>
+
+            @if (!string.IsNullOrEmpty(searchTerm))
+            {
+                <p class="lead fw-light header-subtitle">
+                    تم العثور على @(Model != null ? Model.Count : 0) نتائج
+                </p>
+            }
+        </div>
+    </div>
+
+    <div class="categories-nav-bar border-bottom shadow-sm p-2 ">
+        <div class="container">
+            <div class="d-flex justify-content-center align-items-center py-2">
+
+                @if (ViewBag.Categories != null && ((List<Category>)ViewBag.Categories).Any())
+                {
+                    // الحصول على معرف الفئة المحددة لتحديد الفئة النشطة
+                    var selectedId = ViewBag.SelectedCategoryId?.ToString();
+
+                    @foreach (var category in (List<Category>)ViewBag.Categories)
+                    {
+                        // التحقق مما إذا كانت هذه الفئة هي الفئة النشطة
+                        var isActive = category.Id.ToString() == selectedId;
+
+                        <div class="categories-nav-item mx-4 @(isActive ? "active-category-slide" : "")">
+
+                            <a href="@Url.Action("Products", "Home", new { id = category.Id })"
+                               class="category-link-text text-decoration-none text-black fw-semibold @(isActive ? "active-category-link" : "")">
+
+                                @category.Name
+                            </a>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <div class="container my-5 py-3">
+        @if (Model != null && Model.Any())
+        {
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4 justify-content-center">
+                @foreach (var item in Model)
+                {
+                    <div class="col d-flex">
+                        <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="product-card-link w-100">
+                            <div class="card product-card h-100">
+                                <div class="product-img-container">
+                                    <img src="/Imgs/@item.Image"
+                                         class="custom-img"
+                                         alt="@item.Name"
+                                         loading="lazy">
+                                </div>
+                                <div class="card-body d-flex flex-column pt-3 pb-3">
+                                    <h5 class="card-title" title="@item.Name">@item.Name</h5>
+
+                                    <div class="mt-auto pt-2 border-top">
+                                        <p class="product-price mb-1 text-center">₪ @item.Price.ToString("F1") </p> 
+
+                                        @{
+                                            var stockClass = item.Quantity == 0 ? "out-of-stock" : "text-muted";
+                                            var stockText = item.Quantity != 0 ? $"متوفر في المخزون: {item.Quantity}" : "نفد المخزون";
+                                        }
+
+                                        <p class="product-stock @stockClass text-center mb-0">@stockText</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center my-5 p-5 bg-white rounded shadow-sm">
+                <i class="bi bi-x-circle display-4 text-danger mb-3"></i>
+                <h4 class="text-muted">عذرًا، لا توجد منتجات تطابق البحث "<span class="text-dark">@searchTerm</span>"</h4>
+                <p class="lead">يرجى التحقق من مصطلحات البحث أو تصفح مجموعاتنا الأخرى.</p>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary mt-3">العودة للصفحة الرئيسية</a>
+            </div>
+        }
+    </div>
+
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

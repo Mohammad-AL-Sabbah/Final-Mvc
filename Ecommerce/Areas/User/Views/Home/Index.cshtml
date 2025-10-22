@@ -1,0 +1,713 @@
+﻿@using Ecommerce.Models
+@using Ecommerce.Areas.User.Models
+@{
+    ViewData["Title"] = "Categories";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce Store</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana;
+            background-color: #f7f9fc;
+            overflow-x: hidden;
+        }
+
+        h2 {
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .carousel-inner img {
+            height: 600px;
+            object-fit: cover;
+        }
+
+        .carousel-caption {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            padding: 10px 15px;
+        }
+
+        .carousel-control-prev,
+        .carousel-control-next {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.9;
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        .carousel-control-prev {
+            left: 30px; /* بعد 30px عن اليسار */
+        }
+
+        .carousel-control-next {
+            right: 30px; /* بعد 30px عن اليمين */
+        }
+
+            /* الخلفية الشفافة مع الانتقال السلس */
+            .carousel-control-prev::before,
+            .carousel-control-next::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                border-radius: 50%;
+                background-color: rgba(0,123,255,0.9);
+                transition: background-color 0.3s ease-in-out;
+                z-index: -1;
+            }
+
+            .carousel-control-prev:hover::before,
+            .carousel-control-next:hover::before {
+                background-color: rgba(0,0,0,0);
+            }
+
+            /* Hover effect */
+            .carousel-control-prev:hover,
+            .carousel-control-next:hover {
+                transform: translateY(-50%) scale(1.1);
+                opacity: 1;
+                border: 1px solid white;
+            }
+
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-image: none;
+            width: 15px;
+            height: 15px;
+            border-top: 3px solid white;
+            border-right: 3px solid white;
+            display: inline-block;
+        }
+
+        .carousel-control-prev-icon {
+            transform: rotate(-135deg);
+        }
+
+        .carousel-control-next-icon {
+            transform: rotate(45deg);
+        }
+
+        /* ===== Product Cards ===== */
+        .card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            border-radius: 12px;
+        }
+
+            .card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+            }
+
+        .custom-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .product-name {
+            font-size: 17px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2; /* سطرين */
+            -webkit-box-orient: vertical;
+            height: 45px;
+        }
+
+        .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* ===== Canvas Animation Section ===== */
+        #hero-section {
+            position: relative;
+            height: 65vh;
+            background:black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: auto;
+            max-width: 700px;
+            max-height: 65vh;
+            object-fit: contain;
+        } 
+    </style>
+</head>
+<body>
+
+    <!-- ===== Carousel Section ===== -->
+    <section class="Carousel">
+        <div id="eventCarousel" class="carousel slide carousel-fade mb-5" data-bs-ride="carousel">
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+                <div class="d-flex justify-content-center align-items-center gap-1">
+                    @{
+                        var carousels = (List<Carousel>)ViewBag.Carousels;
+                        for (int i = 0; i < carousels.Count; i++)
+                        {
+                            <button type="button" data-bs-target="#eventCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")"></button>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Carousel Inner -->
+            <div class="carousel-inner shadow-sm">
+                @{
+                    bool first = true;
+                }
+                @foreach (var item in carousels)
+                {
+                    <div class="carousel-item @(first ? "active" : "")">
+                        <img src="@Url.Content("~/Imgs/" + item.Image)" class="d-block w-100 carousel-img" alt="@item.Description">
+
+                        <div class="carousel-caption d-flex flex-column justify-content-center align-items-center text-center">
+                            <h5 class="mb-3 animate__animated animate__fadeInLeftBig">@item.Title</h5>
+                            <p class="animate__animated animate__fadeInRightBig fs-3 fw-bold">@item.SubTitle</p>
+                            <button class="btn shop-btn" onclick="location.href='/User/Home/AllProducts'">Shop Now</button>
+                        </div>
+                    </div>
+                    first = false;
+                }
+            </div>
+
+            <!-- Optional: Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#eventCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#eventCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+
+        <!-- Styles -->
+        <style>
+            .carousel-img {
+                object-fit: cover;
+                height: 500px;
+                transform: scale(1.3);
+                transition: transform 0.7s ease;
+            }
+
+            .carousel-item.active .carousel-img {
+                transform: scale(1);
+            }
+
+            .carousel-caption {
+                background: none;
+                padding: 30px;
+                border-radius: 10px;
+            }
+
+                .carousel-caption h5 {
+                    font-size: 48px;
+                    font-weight: 700;
+                    color: white;
+                }
+
+                .carousel-caption p {
+                    font-size: 20px;
+                    color: white;
+                    margin-bottom: 20px;
+                }
+
+            .shop-btn {
+                background-color: darkorange;
+                color: white;
+                font-weight: 600;
+                padding: 12px 30px;
+                border: 1px solid transparent;
+                transition: all 0.3s ease;
+            }
+
+                .shop-btn:hover {
+                    background-color: white;
+                    color: darkorange;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+                    transform: translateY(-2px);
+                    border-color: white;
+                }
+
+            .carousel-indicators [data-bs-target] {
+                width: 13px !important;
+                height: 13px !important;
+                border-radius: 50% !important;
+                border: 2px solid #fff;
+                opacity: 0.5;
+                margin: 0 3px;
+                background-color: transparent;
+                transition: all 0.3s ease;
+            }
+
+            .carousel-indicators .active {
+                width: 21px !important;
+                height: 4px !important;
+                border-radius: 55px !important;
+                background-color: white !important;
+                opacity: 1 !important;
+                transform: scale(1.2);
+            }
+
+            .carousel-indicators [data-bs-target]:hover {
+                opacity: 0.8;
+            }
+
+            @@media (max-width: 768px) {
+                .carousel-caption h5 {
+                    font-size: 24px;
+                }
+
+                .carousel-caption p {
+                    font-size: 16px;
+                }
+
+                .carousel-img {
+                    height: 300px;
+                }
+            }
+
+            #eventCarousel:hover .carousel-control-prev,
+            #eventCarousel:hover .carousel-control-next {
+                opacity: 1;
+                transition: opacity 0.3s ease;
+            }
+
+            #eventCarousel .carousel-control-prev,
+            #eventCarousel .carousel-control-next {
+                transition: opacity 0.3s ease;
+                opacity: 0;
+            }
+        </style>
+
+        <!-- Animate.css -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    </section>
+
+
+
+
+    <!-- ===== Shop By Category ===== -->
+
+  <section class="ShopByCategory text-center mb-4">
+     <div class="container"> 
+       <div class="row justify-content-center g-4 mt-1"> 
+         @foreach (var item in ((IEnumerable<dynamic>)ViewBag.Categories).Take(4)) {
+            <div class="col-6 col-md-3 col-lg-3 border-1"> <div class="category-bg">
+                
+              <div class="bg-image" style="background-image: url('/Imgs/@item.Image');object-fit:contain">
+                </div>
+             <a href="@Url.Action("Products", "Home", new { id = item.Id })" class="category-card d-flex flex-column align-items-center justify-content-center p-3"> </a> 
+         </div> 
+         <span class="category-name fw-bold mt-3" style="position:relative;top:10px">@item.Name</span> 
+     </div> } 
+     </div> </div>
+        </div>
+
+        <style>
+            /* غلاف البطاقة */
+            .category-bg {
+                position: relative;
+                border-radius: 16px;
+                overflow: hidden;
+                min-height: 320px;
+            }
+
+                /* الخلفية الفعلية داخل البطاقة */
+                .category-bg .bg-image {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background-size: cover;
+                    background-position: center;
+                    transition: transform 0.5s ease; /* حركة ناعمة جداً */
+                    z-index: 1;
+                }
+
+                /* عند تمرير الماوس تعمل زووم بدون خروج */
+                .category-bg:hover .bg-image {
+                    transform: scale(1.15);
+                }
+
+            /* محتوى البطاقة */
+            .category-card {
+                position: relative;
+                z-index: 2;
+                color: white;
+                border-radius: 16px;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                min-height: 320px;
+            }
+
+                .category-card:hover {
+                    transform: translateY(-5px);
+                }
+
+                .category-card .category-name {
+                    margin-top: 8px;
+                    font-size: 1.1rem;
+                    text-align: center;
+                    font-weight: bold;
+                }
+
+            @@media (max-width: 768px) {
+                .category-card, .category-bg
+
+            {
+                min-height: 180px;
+            }
+
+            }
+        </style>
+    </section>
+
+
+    <!-- ===== Latest Products ===== -->
+    <section class="LastAdded">
+        @if (ViewBag.LatestProducts != null && ((List<Product>)ViewBag.LatestProducts).Any())
+        {
+            <div class="container my-5">
+                <h2 class="mb-4 fw-bold text-center">أحدث المنتجات</h2>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-4 justify-content-center">
+                    @foreach (var item in (List<Product>)ViewBag.LatestProducts)
+                    {
+                        <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="text-decoration-none">
+                            <div class="col">
+                                <div class="card h-100 shadow-sm text-center hover-scale">
+                                    <img src="/Imgs/@item.Image" class="card-img-top custom-img object-fit-contain" style="padding:2px" alt="@item.Name">
+                                    <div class="card-body p-2 d-flex flex-column justify-content-between">
+
+                                        <h4 class="fw-bold text-dark product-name mb-1">@item.Name</h4>
+
+                                        <p class="text-muted mb-1">₪ @item.Price.ToString("0.#")</p>
+
+                                        @{
+                                            var stockClass = item.Quantity > 0 ? "text-success fw-bold" : "text-danger fw-bold";
+                                            var stockText = item.Quantity > 0 ? $"متوفر: {item.Quantity} قطعة" : "نفد المخزون";
+                                        }
+                                        <p class="@stockClass mb-1 small">
+                                            @stockText
+                                        </p>
+
+                                        <p class="text-warning mb-0">
+                                            @{
+                                                int fullStars = (int)Math.Floor(item.Rate);
+                                                bool halfStar = (item.Rate - fullStars) >= 0.5m;
+                                                int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                                string starsHtml = "";
+                                                for (int i = 0; i < fullStars; i++) starsHtml += "<i class='fas fa-star'></i>";
+                                                if (halfStar) starsHtml += "<i class='fas fa-star-half-alt'></i>";
+                                                for (int i = 0; i < emptyStars; i++) starsHtml += "<i class='far fa-star'></i>";
+                                                @Html.Raw(starsHtml)
+                                                ;
+                                            }
+                                            @item.Rate.ToString("0.0")
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+
+
+    <!-- ===== Canvas Animation Section ===== -->
+    <section  id="hero-section">
+        <canvas id="hero-lightpass"></canvas>
+        <style>
+            .loader {
+                width: 48px;
+                height: 78px;
+                position: relative;
+                box-sizing: border-box;
+                border: 2px solid white;
+                margin: auto;
+                border-radius: 50% 50% 50% 50% / 25% 25% 25% 25%;
+                display:block;
+                bottom: 10px
+            }
+
+                .loader::before {
+                    content: "";
+                    position: absolute;
+                    left: 50%;
+                    top: 20px;
+                    transform: translateX(-50%);
+                    width: 4px;
+                    height: 4px;
+                    background: white;
+                    border-radius: 10px;
+                    animation: scrollDown 1.5s linear infinite;
+                }
+            @@keyframes scrollDown {
+                0%
+
+            {
+                top: 15px;
+                height: 4px;
+                opacity: 1;
+            }
+
+            33% {
+                top: 15px;
+                height: 40px;
+            }
+
+            66% {
+                top: 50px;
+                height: 10px;
+                opacity: 1;
+            }
+
+            100% {
+                top: 56px;
+                height: 4px;
+                opacity: 0;
+            }
+
+            }
+        </style>
+    </section>
+    <a href="#CategoryProducts" style="text-decoration: none; position:relative;bottom:80px">
+        <span class="loader" style="cursor: pointer;"></span>
+    </a>
+
+    <!--Less Qyantity-->
+    <section class="ProductsLessQuantity">
+        @if (ViewBag.ProductsLessQuantity != null && ((List<Product>)ViewBag.ProductsLessQuantity).Any())
+        {
+            <div class="container my-5">
+                <h2 class="mb-4 fw-bold text-center">منتجات ستنفذ قريباً</h2>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-4 justify-content-center">
+                    @foreach (var item in (List<Product>)ViewBag.ProductsLessQuantity)
+                    {
+                        <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="text-decoration-none">
+                            <div class="col">
+                                <div class="card h-100 shadow-sm text-center hover-scale">
+                                    <img src="/Imgs/@item.Image" class="card-img-top custom-img object-fit-contain" style="padding:2px" alt="@item.Name">
+                                    <div class="card-body p-2 d-flex flex-column justify-content-between">
+                                        <p class="fw-bold text-dark product-name mb-1">@item.Name</p>
+
+                                        <p class="text-muted mb-1">₪ @item.Price.ToString("0.#")</p>
+
+                                        @{
+                                            var stockText = item.Quantity > 0 ? $"متبقٍ: {item.Quantity} قطعة" : "نفد المخزون";
+                                        }
+                                        <p class="text-danger fw-bold mb-1 small">
+                                            @stockText
+                                        </p>
+
+                                        <p class="text-warning mb-0">
+                                            @{
+                                                int fullStars = (int)Math.Floor(item.Rate);
+                                                bool halfStar = (item.Rate - fullStars) >= 0.5m;
+                                                int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                                string starsHtml = "";
+                                                for (int i = 0; i < fullStars; i++) starsHtml += "<i class='fas fa-star'></i>";
+                                                if (halfStar) starsHtml += "<i class='fas fa-star-half-alt'></i>";
+                                                for (int i = 0; i < emptyStars; i++) starsHtml += "<i class='far fa-star'></i>";
+                                                @Html.Raw(starsHtml)
+                                                ;
+                                            }
+                                            @item.Rate.ToString("0.0")
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+
+
+    <!-- ===== Category Products  ===== -->
+    <section id="CategoryProducts" class="CategoryProducts">
+        @if (ViewBag.productsFilter != null && ((List<Product>)ViewBag.productsFilter).Any())
+        {
+            <div class="container my-5">
+                <h2 class="mb-4 fw-bold text-center">@ViewBag.CategoryName : الصنف المختار لليوم </h2>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-4 justify-content-center">
+                    @foreach (var item in (List<Product>)ViewBag.productsFilter)
+                    {
+                        <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="text-decoration-none">
+                            <div class="col">
+                                <div class="card h-100 shadow-sm text-center hover-scale">
+                                    <img src="/Imgs/@item.Image" class="card-img-top custom-img object-fit-contain" style="padding:2px" alt="@item.Name">
+                                    <div class="card-body p-2 d-flex flex-column justify-content-between">
+                                        <h4 class="fw-bold text-dark product-name mb-1">@item.Name</h4>
+
+                                        <p class="text-muted mb-1">₪ @item.Price.ToString("0.#")</p>
+
+                                        @{
+                                            var stockClass = item.Quantity > 0 ? "text-success fw-bold" : "text-danger fw-bold";
+                                            var stockText = item.Quantity > 0 ? $"متوفر: {item.Quantity} قطعة" : "نفد المخزون";
+                                        }
+                                        <p class="@stockClass mb-1 small">
+                                            @stockText
+                                        </p>
+
+                                        <p class="text-warning mb-0">
+                                            @{
+                                                int fullStars = (int)Math.Floor(item.Rate);
+                                                bool halfStar = (item.Rate - fullStars) >= 0.5m;
+                                                int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                                string starsHtml = "";
+                                                for (int i = 0; i < fullStars; i++) starsHtml += "<i class='fas fa-star'></i>";
+                                                if (halfStar) starsHtml += "<i class='fas fa-star-half-alt'></i>";
+                                                for (int i = 0; i < emptyStars; i++) starsHtml += "<i class='far fa-star'></i>";
+                                                @Html.Raw(starsHtml)
+                                                ;
+                                            }
+                                            @item.Rate.ToString("0.0")
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="container my-5">
+                <p class="text-center text-muted mt-4">لا توجد منتجات في هذه الفئة.</p>
+            </div>
+        }
+    </section>
+
+
+    <!-- ===== Top Rated Products ===== -->
+    <section class="TopRating">
+        @if (ViewBag.ProductsTopRate != null && ((List<Product>)ViewBag.ProductsTopRate).Any())
+        {
+            <div class="container my-5">
+                <h2 class="mb-4 fw-bold text-center">أفضل 5 منتجات تقييماً</h2>
+                <div class="row row-cols-2 row-cols-md-3 row-cols-xl-5 g-4 justify-content-center">
+                    @foreach (var item in (List<Product>)ViewBag.ProductsTopRate)
+                    {
+                        <a href="@Url.Action("Details", "Home", new { id = item.Id })" class="text-decoration-none">
+                            <div class="col">
+                                <div class="card h-100 shadow-sm text-center hover-scale">
+                                    <img src="/Imgs/@item.Image" class="card-img-top custom-img" alt="@item.Name">
+                                    <div class="card-body p-2 d-flex flex-column justify-content-between">
+                                        <p class="fw-bold text-dark product-name mb-1">@item.Name</p>
+
+                                        <p class="text-muted mb-1">₪ @item.Price.ToString("0.#")</p>
+
+                                        @{
+                                            var stockClass = item.Quantity > 0 ? "text-success fw-bold" : "text-danger fw-bold";
+                                            var stockText = item.Quantity > 0 ? $"متوفر: {item.Quantity} قطعة" : "نفد المخزون";
+                                        }
+                                        <p class="@stockClass mb-1 small">
+                                            @stockText
+                                        </p>
+
+                                        <p class="text-warning mb-0">
+                                            @{
+                                                int fullStars = (int)Math.Floor(item.Rate);
+                                                bool halfStar = (item.Rate - fullStars) >= 0.5m;
+                                                int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                                string starsHtml = "";
+                                                for (int i = 0; i < fullStars; i++) starsHtml += "<i class='fas fa-star'></i>";
+                                                if (halfStar) starsHtml += "<i class='fas fa-star-half-alt'></i>";
+                                                for (int i = 0; i < emptyStars; i++) starsHtml += "<i class='far fa-star'></i>";
+                                                @Html.Raw(starsHtml)
+                                                ;
+                                            }
+                                            @item.Rate.ToString("0.0")
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+  
+
+
+
+
+    <!-- ===== Scripts ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script>
+        const canvas = document.getElementById("hero-lightpass");
+        const context = canvas.getContext("2d");
+
+        canvas.width = 1158;
+        canvas.height = 770;
+
+        const frameCount = 147;
+        const currentFrame = index =>
+            `https://www.apple.com/105/media/us/airpods-pro/2019/1299e2f5_9206_4470_b28e_08307a42f19b/anim/sequence/large/01-hero-lightpass/${(index + 1).toString().padStart(4, '0')}.jpg`;
+
+        const images = [];
+        const airpods = { frame: 0 };
+
+        for (let i = 0; i < frameCount; i++) {
+            const img = new Image();
+            img.src = currentFrame(i);
+            images.push(img);
+        }
+
+        gsap.to(airpods, {
+            frame: frameCount - 1,
+            snap: "frame",
+            ease: "none",
+            scrollTrigger: { scrub: 1 },
+            onUpdate: render
+        });
+
+        images[0].onload = render;
+
+        function render() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(images[airpods.frame], 0, 0);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

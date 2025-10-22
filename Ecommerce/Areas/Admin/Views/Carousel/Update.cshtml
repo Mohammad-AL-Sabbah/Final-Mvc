@@ -1,0 +1,197 @@
+﻿@using Ecommerce.Models
+@model Carousel
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+<div class="page-container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+
+            <div class="floating-panel p-0 rounded-4 shadow-lg">
+                <header class="panel-header text-center p-4 bg-light rounded-top-4">
+                    <h1 class="mb-1 fw-bolder text-dark">Update Carousel</h1>
+                    <p class="text-muted small"> Current Title: <span class="fw-semibold text-primary">@Model.Title</span> </p>
+                </header>
+
+                <div class="panel-body p-5">
+                    <form asp-action="Update" method="post" enctype="multipart/form-data">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-4 form-floating">
+                            <input asp-for="Title" class="form-control" id="carouselTitle" placeholder="Title" />
+                            <label for="carouselTitle" class="text-muted text-accessible-danger">Title</label>
+                            <span class="text-danger small mt-1 d-block" asp-validation-for="Title"></span>
+                        </div>
+
+                        <div class="mb-4 form-floating">
+                            <input asp-for="SubTitle" class="form-control" id="carouselSubTitle" placeholder="SubTitle" />
+                            <label for="carouselSubTitle" class="text-muted text-accessible-danger">SubTitle</label>
+                            <span class="text-danger small mt-1 d-block" asp-validation-for="SubTitle"></span>
+                        </div>
+
+                        <div class="mb-4 form-floating">
+                            <textarea asp-for="Description" class="form-control" id="carouselDescription" placeholder="Description" style="height:100px;"></textarea>
+                            <label for="carouselDescription" class="text-muted text-accessible-danger">Description</label>
+                            <span class="text-danger small mt-1 d-block" asp-validation-for="Description"></span>
+                        </div>
+
+                        <div class="mb-5 p-4 border rounded-4 image-upload-area">
+                            <label class="form-label fw-bold text-muted d-block mb-3">
+                                <i class="bi bi-image me-2"></i> Carousel Image
+                            </label>
+
+                            <div class="d-flex justify-content-around align-items-center mb-4 flex-wrap gap-3">
+
+                                <div class="image-box text-center new-image-box" id="newImageContainer">
+                                    <p class="small fw-bold text-success mb-2">New photo</p>
+                                    <div class="position-relative">
+                                        <img id="newImage" src="#" alt="معاينة الصورة الجديدة"
+                                             class="img-fluid rounded-circle border border-3 border-success shadow-lg d-none new-image-style"
+                                             style="width:120px; height:120px; object-fit:cover;" />
+                                        <button id="cancelImage" type="button"
+                                                class="btn btn-sm btn-danger position-absolute top-0 end-0 rounded-circle d-none"
+                                                style="width:25px; height:25px; padding:0; font-size:1rem; line-height:1;">
+                                            &times;
+                                        </button>
+
+                                        <div id="placeholderImage" class="d-flex align-items-center justify-content-center bg-light text-muted border border-dashed rounded-circle new-image-style"
+                                             style="width:120px; height:120px;">
+                                            <i class="bi bi-cloud-arrow-up fs-3"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <i class="bi bi-arrow-left-short fs-2 text-primary d-none d-sm-block"></i>
+
+                                <div class="image-box text-center old-image-box">
+                                    <p class="small text-muted mb-2">Current photo</p>
+                                    <img src="~/Imgs/@Model.Image" alt="@Model.Title"
+                                         class="img-fluid rounded-circle shadow-sm old-image-style"
+                                         style="width:120px; height:120px; object-fit:cover;" />
+                                </div>
+                            </div>
+
+                            <input type="file" name="Image" id="Image" class="d-none" accept="image/*" />
+                            <span asp-validation-for="Image" class="text-danger small mt-1 d-block"></span>
+
+                            <div class="text-center mt-3">
+                                <button type="button" id="customUploadButton" class="btn btn-outline-primary rounded-pill px-4">
+                                    <i class="bi bi-upload me-2"></i> Choose a new image
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between pt-4 border-top">
+                            <a href="/Admin/Carousels/Index" class="btn btn-outline-secondary rounded-3 py-2 px-4 shadow-sm">
+                                <i class="bi bi-arrow-right me-1"></i> Cancel Changes
+                            </a>
+
+                            <button type="submit" class="btn btn-primary rounded-3 py-2 px-4 fw-bold shadow-sm hover-lift">
+                                <i class="bi bi-check-lg me-1"></i> Save Updates
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const imageInput = document.getElementById("Image");
+        const newImage = document.getElementById("newImage");
+        const cancelBtn = document.getElementById("cancelImage");
+        const placeholderImage = document.getElementById("placeholderImage");
+        const customUploadButton = document.getElementById("customUploadButton");
+
+        customUploadButton.addEventListener("click", () => imageInput.click());
+
+        function previewFile() {
+            const file = imageInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    newImage.src = e.target.result;
+                    newImage.classList.remove("d-none");
+                    cancelBtn.classList.remove("d-none");
+                    placeholderImage.classList.add("d-none");
+                };
+                reader.readAsDataURL(file);
+            } else {
+                newImage.src = "#";
+                newImage.classList.add("d-none");
+                cancelBtn.classList.add("d-none");
+                placeholderImage.classList.remove("d-none");
+            }
+        }
+
+        imageInput.addEventListener("change", previewFile);
+
+        cancelBtn.addEventListener("click", function () {
+            imageInput.value = "";
+            previewFile();
+        });
+    })();
+</script>
+
+<style>
+    .page-container {
+        background-color: #f4f7f9;
+        min-height: 100vh;
+    }
+
+    .panel-header {
+        border-bottom: 1px solid #eee;
+    }
+
+    .form-control {
+        height: 50px;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        transition: all 0.2s;
+    }
+
+        .form-control:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.25rem rgba(13,110,253,0.15);
+        }
+
+    .image-upload-area {
+        background-color: #fff;
+        border: 2px dashed #e0e6ed !important;
+        transition: border-color 0.3s ease;
+    }
+
+        .image-upload-area:hover {
+            border-color: var(--bs-primary) !important;
+        }
+
+    .old-image-style {
+        border: 2px solid #ccc;
+        opacity: 0.9;
+    }
+
+    .new-image-style {
+        transition: transform 0.3s ease;
+    }
+
+        .new-image-style:hover {
+            transform: scale(1.05);
+        }
+
+    .hover-lift {
+        transition: all 0.2s ease;
+    }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(13,110,253,0.3) !important;
+        }
+
+    #placeholderImage {
+        border-style: dashed;
+    }
+</style>

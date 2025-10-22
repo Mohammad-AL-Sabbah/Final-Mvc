@@ -1,0 +1,157 @@
+﻿@using Ecommerce.Models
+@model Category
+
+@{
+    ViewData["Title"] = "إنشاء فئة جديدة";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa; /* لون خلفية فاتح جداً */
+    }
+    .card-modern {
+        border-radius: 1rem; /* زوايا أكثر استدارة للبطاقة */
+        border: none;
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08); /* ظل أعمق وأكثر انتشاراً */
+    }
+    .form-control:focus {
+        border-color: #007bff; /* لون حدود عند التركيز */
+        box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+    }
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+    }
+    .image-preview-wrapper {
+        position: relative;
+        width: 150px; /* حجم ثابت للمعاينة */
+        height: 150px;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #e9ecef; /* خلفية افتراضية للمعاينة */
+    }
+    .image-preview-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* لاقتصاص الصورة مع الحفاظ على الأبعاد */
+    }
+    .remove-image-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        border-radius: 50%;
+        background-color: rgba(220, 53, 69, 0.8); /* أحمر مع شفافية */
+        color: white;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        z-index: 10;
+        transition: background-color 0.2s ease;
+    }
+    .remove-image-btn:hover {
+        background-color: #dc3545; /* أحمر داكن عند التمرير */
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9 col-sm-11">
+            
+            <div class="card card-modern">
+                <div class="card-body p-5">
+                    
+                    <h1 class="h3 fw-bold text-center mb-4 text-primary">إنشاء فئة جديدة</h1>
+                    <p class="text-center text-muted mb-5">
+                        املأ الحقول أدناه لإنشاء فئة منتجات جديدة في متجرك.
+                    </p>
+
+                    <form asp-action="Store" asp-controller="Categories" asp-area="Admin" method="post" enctype="multipart/form-data" id="categoryForm">
+
+                        <div class="mb-4">
+                            <label for="categoryName" class="form-label fw-semibold">اسم الفئة</label>
+                            <input type="text" asp-for="Name" class="form-control form-control-lg" id="categoryName" placeholder="أدخل اسم الفئة (مثلاً: إلكترونيات، ملابس، أدوات منزلية)" required />
+                            <span asp-validation-for="Name" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="mb-5">
+                            <label for="ImageFile" class="form-label fw-semibold d-block mb-3">صورة الفئة</label>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <div id="imagePreviewContainer" class="image-preview-wrapper me-4 d-none">
+                                    <img id="imagePreview" src="#" alt="صورة الفئة" />
+                                    <button type="button" id="removeImageBtn" class="remove-image-btn" aria-label="إزالة الصورة">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </div>
+                                <input type="file" name="Image" id="ImageFile" class="form-control" accept="image/*" />
+                            </div>
+                            
+                            <small class="form-text text-muted">اختر صورة واضحة ومناسبة للفئة. يفضل أن تكون الأبعاد متساوية (مربعة).</small>
+                            <span asp-validation-for="Image" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                        
+                        <div class="d-grid gap-3 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold py-2">
+                                <i class="bi bi-check-lg me-2"></i>
+                                حفظ الفئة
+                            </button>
+                            
+                            <a asp-action="Index" asp-controller="Categories" asp-area="Admin" class="btn btn-outline-secondary btn-lg py-2">
+                                <i class="bi bi-arrow-left me-2"></i>
+                                العودة إلى القائمة
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.getElementById('ImageFile');
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImage = document.getElementById('imagePreview');
+            const removeBtn = document.getElementById('removeImageBtn');
+
+            fileInput.addEventListener('change', function () {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewContainer.classList.remove('d-none');
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    // إذا لم يتم اختيار ملف (مثلاً بعد النقر على إلغاء في نافذة اختيار الملف)
+                    previewContainer.classList.add('d-none');
+                    previewImage.src = '#';
+                }
+            });
+
+            removeBtn.addEventListener('click', function () {
+                previewContainer.classList.add('d-none');
+                previewImage.src = '#';
+                fileInput.value = ''; // مسح الملف المختار من حقل الإدخال
+            });
+        });
+    </script>
+}

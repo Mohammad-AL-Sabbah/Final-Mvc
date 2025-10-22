@@ -1,0 +1,178 @@
+﻿@model IEnumerable<Ecommerce.Models.Category>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Categories || الأصناف</h2>
+
+    <table class="table table-hover text-center align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Name</td>
+                    <td>
+                        <img src="/Imgs/@item.Image" alt="@item.Name" style="width:80px; height:80px; object-fit:cover; border-radius:8px;" />
+                    </td>
+                    <td>
+                        <a href="/Admin/Categories/CategoryProducts/@item.Id" class="btn btn-primary btn-sm me-1">Details</a>
+                        <a href="/Admin/Categories/Edit/@item.Id" class="btn btn-warning btn-sm me-1">Update</a>
+                        <a href="/Admin/Categories/RemoveCats/@item.Id" onclick="return confirm('هل أنت متأكد من حذف هذا المنتج؟');" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    table.table th,
+    table.table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    table.table th,
+    table.table td {
+        /* تقسيم الأعمدة بالتساوي */
+        width: 25%;
+    }
+
+    table.table img {
+        border: 1px solid #dee2e6;
+    }
+</style>
+<hr />
+<div class="category-selection-container">
+    <div class="card-custom">
+        <h2 class="card-title-custom">اختيار الفئة المفضلة </h2>
+  
+
+        <form asp-area="Admin" asp-controller="Categories" asp-action="SaveLastSelectedCategory" method="post" class="category-form">
+
+            <div class="form-group-custom">
+                <label for="category-select" class="form-label-custom">الفئة:</label>
+                <select name="id" id="category-select" class="form-select-custom">
+                    @foreach (var cat in Model)
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+            </div>
+
+            <button type="submit" class="btn-submit-custom">
+                <i class="fas fa-save icon-spacing"></i>
+                حفظ الاختيار
+            </button>
+        </form>
+    </div>
+</div>
+<style>
+
+    .category-selection-container {
+        display: flex;
+        justify-content: center; 
+        align-items: center; 
+        min-height: 50vh; 
+        background-color: #f4f7f9; 
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+        direction: rtl; 
+    }
+
+    .card-custom {
+        background-color: #ffffff;
+        border-radius: 15px; 
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+        padding: 40px;
+        max-width: 450px;
+        width: 100%;
+        text-align: center;
+    }
+
+    .card-title-custom {
+        color: #333; 
+        margin-bottom: 10px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .card-description-custom {
+        color: #6c757d;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
+
+    .form-group-custom {
+        margin-bottom: 25px;
+        text-align: right;
+    }
+
+    .form-label-custom {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .form-select-custom {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ced4da;
+        border-radius: 8px; 
+        background-color: #fff;
+        color: #495057;
+        font-size: 16px;
+        appearance: none; 
+        -webkit-appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.8-6.4H19.2c-7.8%200-13.8%206.4-13.8%2014.2s6.4%2013.8%2014.2%2013.8h253.6c7.8%200%2013.8-6.4%2013.8-14.2%200-.2-.2-.4-.2-.6zM287%20223a17.6%2017.6%200%200%200-13.8-6.4H19.2c-7.8%200-13.8%206.4-13.8%2014.2s6.4%2013.8%2014.2%2013.8h253.6c7.8%200%2013.8-6.4%2013.8-14.2%200-.2-.2-.4-.2-.6z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
+        background-repeat: no-repeat;
+        background-position: left 15px center;
+        background-size: 10px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+    }
+
+        .form-select-custom:focus {
+            border-color: #007bff; 
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+    .btn-submit-custom {
+        width: 100%;
+        padding: 12px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.1s ease;
+        margin-top: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .btn-submit-custom:hover {
+            background-color: #0056b3; 
+        }
+
+        .btn-submit-custom:active {
+            transform: translateY(1px);
+        }
+
+    .icon-spacing {
+        margin-left: 8px; 
+    }
+
+</style>

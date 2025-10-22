@@ -1,0 +1,380 @@
+﻿@using Ecommerce.Models
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ecommerce</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="~/imgs/app.png">
+
+    <style>
+        /* --- الأساسيات --- */
+        html, body {
+            max-width: 100%;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            /* استخدام الخط العربي الحديث */
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        /* --- تحسين شكل الـ Navbar --- */
+        .navbar {
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 9999;
+            /* خلفية بيضاء مع تأثير ضباب خفيف (Frosted Glass) */
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s ease;
+        }
+
+            .navbar.scrolled {
+                background: rgba(255, 255, 255, 0.98);
+            }
+
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.8rem;
+            color: #ff5722 !important; /* لون برتقالي حيوي */
+            letter-spacing: -0.5px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+            .navbar-brand .material-icons {
+                font-size: 1.8rem;
+                color: #ff5722;
+            }
+
+            .navbar-brand:hover {
+                color: #e64a19 !important;
+            }
+
+        /* تنسيق الروابط الرئيسية */
+        .navbar-nav .nav-link {
+            font-weight: 600;
+            color: #333 !important;
+            padding: 0.5rem 1rem;
+            position: relative;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+            .navbar-nav .nav-link:hover {
+                color: #ff5722 !important;
+                transform: translateY(-2px);
+            }
+
+            /* خط سفلي متحرك */
+            .navbar-nav .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                width: 0;
+                height: 3px;
+                background-color: #ff5722;
+                transition: all 0.3s ease;
+                transform: translateX(-50%);
+            }
+
+            .navbar-nav .nav-link:hover::after,
+            .navbar-nav .nav-link.active::after {
+                width: 80%;
+            }
+
+        /* --- تحسين أيقونة عربة التسوق (Cart Icon) - التعديلات هنا --- */
+        .cart-icon-container {
+            position: relative;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-icon {
+            /* تغيير الأيقونة هنا إلى أيقونة حقيبة تسوق (shopping_bag) لتبدو أكثر احترافية */
+            font-size: 1.7rem;
+            color: #444;
+            transition: color 0.3s ease, transform 0.2s ease;
+            padding: 5px; /* لإضافة مساحة حول الأيقونة */
+            border-radius: 50%;
+        }
+
+            .cart-icon:hover {
+                color: #ff5722;
+                transform: scale(1.1);
+                background-color: rgba(255, 87, 34, 0.1); /* تأثير خفيف حول الأيقونة */
+            }
+
+        .cart-badge {
+            position: absolute;
+            top: -6px; /* رفع الشارة قليلاً */
+            right: -8px; /* تقريبها من الأيقونة */
+            min-width: 18px; /* لضمان شكل دائري أفضل للأرقام الكبيرة */
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border-radius: 50%;
+            /* تظليل مميز للشارة */
+            background-color: #ff5722;
+            box-shadow: 0 2px 5px rgba(255, 87, 34, 0.4);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+
+        .cart-icon-container:hover .cart-badge {
+            transform: scale(1.2) rotate(5deg); /* تحريك الشارة مع الهوفر لإضافة حيوية */
+        }
+
+        /* تنسيق البحث */
+        .search-container {
+            position: relative;
+            margin: 0 10px;
+        }
+
+        #searchBox, #searchBox_mobile {
+            border-radius: 20px;
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            background-color: #f7f7f7;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+            #searchBox:focus, #searchBox_mobile:focus {
+                box-shadow: 0 0 8px rgba(255, 87, 34, 0.2);
+                border-color: #ff5722;
+                background-color: #fff;
+            }
+
+        #searchResults, #searchResults_mobile {
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            border: none;
+        }
+
+            #searchResults li, #searchResults_mobile li {
+                padding: 10px 15px;
+                border-bottom: 1px solid #eee;
+                transition: background-color 0.2s ease;
+            }
+
+                #searchResults li:hover, #searchResults_mobile li:hover {
+                    background-color: #fff3e0;
+                }
+
+            #searchResults img, #searchResults_mobile img {
+                object-fit: cover;
+                border-radius: 4px;
+            }
+
+        /* تنسيق الفوتر */
+        footer {
+            background: #212121;
+        }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid d-flex align-items-center px-lg-5 px-3">
+
+            <div class="d-flex align-items-center order-lg-0">
+              
+                <a href="#Cart" class="text-decoration-none d-lg-none cart-icon-container">
+                    <i class="material-icons cart-icon">shopping_bag</i>
+                    <span class="cart-badge" id="mobileCartCount">0</span>
+                </a>
+                <a class="navbar-brand me-3" href="/">
+                    <i class="material-icons me-1">local_mall</i>
+                    Ecommerce
+                </a>
+
+              
+            </div>
+
+            <button class="navbar-toggler order-lg-2" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarContent" aria-controls="navbarContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse order-lg-1" id="navbarContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0 text-center align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/User/Home/WeAre">من نحن؟</a>
+                    </li>
+
+
+                    <li class="nav-item d-block d-lg-none w-100">
+                        <div class="search-container my-3" style="width: 100%;">
+                            <input type="search" id="searchBox_mobile" class="form-control" placeholder="ابحث عن منتج أو فئة..." autocomplete="off" />
+                            <ul id="searchResults_mobile" class="list-group position-absolute w-100" style="z-index:1000;"></ul>
+                        </div>
+                    </li>
+
+                    
+                    @if (ViewBag.Categories != null)
+                    {
+                        var categories = ((List<Category>)ViewBag.Categories).Take(4).ToList();
+                        foreach (var item in categories)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Products", "Home", new { area = "User", id = item.Id })">
+                                    @item.Name
+                                </a>
+                            </li>
+                        }
+                    }
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("AllProducts", "Home", new { area = "User" })">كل المنتجات</a>
+                    </li>
+
+
+                </ul>
+            </div>
+
+            <div class="search-container d-none d-lg-block mx-3 order-lg-3">
+                <input type="search" id="searchBox" style="width:300px" class="form-control" placeholder="ابحث عن منتج أو فئة..." autocomplete="off" />
+                <ul id="searchResults" class="list-group position-absolute w-100" style="z-index:1000;"></ul>
+            </div>
+
+            <a href="#Cart" class="text-decoration-none d-none d-lg-block cart-icon-container order-lg-4">
+                <i class="material-icons cart-icon">shopping_bag</i>
+                <span class="cart-badge" id="desktopCartCount">0</span>
+            </a>
+
+        </div>
+    </nav>
+
+
+    <main class="flex-fill">
+        @RenderBody()
+    </main>
+
+    <footer class="py-4 mt-auto">
+        <div class="container">
+            <p class="m-0 text-center text-white">جميع الحقوق محفوظة &copy; Ecommerce 2025</p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // تغيير شفافية الـ navbar عند التمرير
+        window.addEventListener('scroll', function () {
+            const nav = document.querySelector('.navbar');
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        $(document).ready(function () {
+            function updateCartCount(count) {
+                $('#mobileCartCount').text(count);
+                $('#desktopCartCount').text(count);
+            }
+            // مثال: تعيين عدد افتراضي للعناصر
+            updateCartCount(3);
+
+
+            // توحيد دالة البحث لكل من الموبايل وسطح المكتب
+            function setupSearch(searchBoxId, resultsListId) {
+                $(searchBoxId).on("keyup", function (e) {
+                    var query = $(this).val();
+                    var list = $(resultsListId);
+                    list.empty();
+
+                    // عند الضغط على Enter
+                    if (e.key === "Enter" && query.length > 0) {
+                        window.location.href = '@Url.Action("AllProducts", "Home", new { area = "User" })' + '?search=' + encodeURIComponent(query);
+                        return;
+                    }
+
+                    if (query.length > 1) {
+                        $.ajax({
+                            url: '@Url.Action("SearchSuggest", "Home", new { area = "User" })',
+                            type: 'GET',
+                            data: { term: query },
+                            success: function (data) {
+                                list.empty();
+
+                                if (data.products.length > 0) {
+                                    data.products.slice(0, 3).forEach(function (p) { // عرض أول 3 منتجات فقط
+                                        const imagePath = p.image && p.image.startsWith('http')
+                                            ? p.image
+                                            : '/Imgs/' + p.image;
+
+                                        list.append(`
+                                            <li class="list-group-item d-flex align-items-center search-product-item">
+                                                <img src="${imagePath}" width="40" height="40" class="me-3 rounded"/>
+                                                <div class="flex-grow-1">
+                                                    <a href="@Url.Action("Details", "Home", new { area = "User" })/${p.id}" class="fw-bold text-decoration-none text-dark">${p.name}</a>
+                                                    <div class="text-muted small">₪${p.price}</div>
+                                                </div>
+                                            </li>
+                                        `);
+                                    });
+                                }
+
+                                if (data.categories.length > 0) {
+                                    list.append('<li class="list-group-item disabled fw-bold text-primary bg-light">الفئات:</li>');
+                                    data.categories.forEach(function (c) {
+                                        list.append(`
+                                            <li class="list-group-item">
+                                                <div class="fw-bold mb-1">${c.name}</div>
+                                                <a href="@Url.Action("Products", "Home", new { area = "User" })/${c.id}" class="btn btn-sm btn-outline-primary w-100">تصفح فئة ${c.name}</a>
+                                            </li>
+                                        `);
+                                    });
+                                }
+
+                                if (data.products.length === 0 && data.categories.length === 0) {
+                                    list.append(`<li class="list-group-item text-center text-muted">لا توجد نتائج مطابقة لـ "${query}"</li>`);
+                                }
+                            }
+                        });
+                    } else {
+                        list.empty();
+                    }
+                });
+            }
+
+            setupSearch("#searchBox", "#searchResults"); // للديسكتوب
+            setupSearch("#searchBox_mobile", "#searchResults_mobile"); // للموبايل
+
+            // إخفاء نتائج البحث عند الضغط خارجها
+            $(document).on('click', function (e) {
+                if (!$(e.target).closest('.search-container').length) {
+                    $("#searchResults").empty();
+                    $("#searchResults_mobile").empty();
+                }
+            });
+            
+            // ✅ وظيفة إغلاق القائمة عند النقر على رابط (سلوك جيد للموبايل)
+            // هذه الآلية تتأكد من تحديث aria-expanded بشكل سليم
+            $('#navbarContent a.nav-link').on('click', function() {
+                var navbarCollapse = document.getElementById('navbarContent');
+                if (navbarCollapse.classList.contains('show')) {
+                    // نستخدم getOrCreateInstance لضمان وجود كائن الـ Collapse
+                    var bsCollapse = bootstrap.Collapse.getOrCreateInstance(navbarCollapse);
+                    bsCollapse.hide();
+                }
+            });
+            
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
